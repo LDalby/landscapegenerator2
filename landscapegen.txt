@@ -1,0 +1,34 @@
+# Grass version of landscapegen
+# location created with this proj4string:
+# +proj=utm +zone=32 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+
+# define region from polygon mask
+# be sure check the dimensions match with 
+g.region n=6154932 s=6149932 w=482806 e=487806 rows=5000 cols=5000 --o
+
+# Import and convert vector layers
+# Land/sea
+v.to.rast input="nameofinput" use=attr attribute_column="nameofcolumn" output="nameofrasteroutput"
+
+# Other layers:
+# Skov
+v.in.ogr input=smb://unidfs01.uni.au.dk/dfs/ST_Lada/Projekter/MUST-B/fot_may_2017/NATUR/SKOV.shp output=skov
+v.to.rast input=skov use=attr attribute_column=FEAT_KODE output=tmp_raster
+r.mapcalc expression=if(isnull(tmp_raster),1,tmp_raster)
+
+# Til distance to feature
+r.grow.distance input=tmp_raster distance="nameofdistfile"
+r.mapcalc expression=if("nameofdistfile" < "cutoffvalue", "newval", 1)
+
+# AIS
+v.to.rast input="aismap", use=attr attribute_column=LUATYPE output="nameofrasteroutput"
+r.mapcalc expression=if(isnull("nameofrasteroutput"),1,"nameofrasteroutput")
+
+# Make themes
+r.series input="alltherasters", method=maximum
+
+# Stack
+r.mapcalc...
+
+482806, 6154932
+smb://unidfs01.uni.au.dk/dfs/ST_Lada/Projekter/MUST-B/fot_may_2017/NATUR/SKOV.shp
