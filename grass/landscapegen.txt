@@ -1,0 +1,16 @@
+# Grass version of landscapegen
+
+# define region from polygon mask
+# be sure check the dimensions match with 
+g.region vector="nameofmask" rows=10000 cols=10000 --o
+
+# Import and convert vector layers
+# Land/sea
+v.to.rast input="nameofinput" use=attr attribute_column="nameofcolumn" output="nameofrasteroutput"
+
+# Other layers:
+v.to.rast input="nameofinput" use=attr attribute_column="nameofcolumn" output="nameofrasteroutput"
+r.mapcalc expression=if("nameofrasteroutput" < "cutoffvalue", "newval", 1)
+
+# AIS
+v.to.rast input="aismap", use=attr attribute_column="nameofcolumn" output="nameofrasteroutput"
