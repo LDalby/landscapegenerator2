@@ -17,8 +17,10 @@ v.to.rast input=skov use=attr attribute_column=FEAT_KODE output=tmp_raster
 r.mapcalc expression="skov310 = if(isnull(tmp_raster),1,310)"
 
 # Til distance to feature
-r.grow.distance input=tmp_raster distance="nameofdistfile"
-r.mapcalc expression=if("nameofdistfile" < "cutoffvalue", "newval", 1)
+v.in.ogr input=/run/user/1000/gvfs/smb-share:server=unidfs01.uni.au.dk,share=dfs/ST_Lada/Projekter/MUST-B/fot_may_2017/TRAFIK/JERNBANE.shp output=jernbane
+v.to.rast input=jernbane use=attr attribute_column=FEAT_KODE output=tmp_raster --overwrite
+r.grow.distance input=tmp_raster distance=dist_to_railroad
+r.mapcalc expression="rail120 = if(dist_to_railroad < 4.5, 120, 1)"
 
 # AIS
 v.to.rast input="aismap", use=attr attribute_column=LUATYPE output="nameofrasteroutput"
